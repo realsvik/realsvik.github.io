@@ -1,1 +1,192 @@
-Hello World
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sparkling wine variety</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Sparkling wine variety">
+  <meta name="author" content="Realsvik">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/firstS.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+<link rel=stylesheet href="./assets/css/wineStyle.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Sparkling wine variety</h1>
+    <h2>in one online shop in Moscow</h2>
+    <p>Realsvik<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Sparkling wine variety overview</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>With this course project I analysed available variety of sparkling wines in one of Moscow online shops. I chose to do so, because it is a suitable topic for Christmas and New Year season. </p>
+
+<p>As a result, I found out, that price range was as wide as from 2 to 573 USD, with the majority of bottles coming from France and Italy.</p>
+
+<p>My application allows to see, how many bottles is available for certain price range, in which color, and the contries of origin.</p>
+
+<p>To build the app, I took the following steps:</p>
+
+<ol>
+<li>Grab data, using Kimonolabs tools from <a href="https://www.kimonolabs.com/">https://www.kimonolabs.com/</a></li>
+<li>Trasnlated the data, so everyone can understand it</li>
+<li>Cleaned and transformed data for analysis</li>
+<li>Created the plots</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="eightyfive" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Getting and cleansing data</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Kimono plugin delivers data in json format, so I needed to parse it, using rjson package.</p>
+
+<pre class="innerCode">
+set.seed(7777)
+library(rjson)
+library(dplyr)
+json_file <- "assets/data/winestylespark2.json"
+json_data <- fromJSON(file=json_file)
+grabInfo<-function(var){
+  print(paste("Variable", var, sep=" "))  
+  sapply(json_data$results$collection, function(x) returnData(x, var)) 
+}
+grabInfoNames<-function(var){
+  sapply(json_data$results$collection, function(x) returnData(x, var)) 
+}
+returnData<-function(x, var){
+  if(!is.null(x[[var]])){
+    return(x[[var]])
+  }else{
+    return(NA)
+  }
+}
+wineProps<-c(2:5)
+wineDataDF<-data.frame(sapply(wineProps, grabInfo), stringsAsFactors=FALSE)
+urls<-sapply(json_data$results$collection, function(x) x$property1$href)
+names<-sapply(json_data$results$collection, function(x) x$property1$text)
+tmpDF<-data.frame(name=names, stringsAsFactors=FALSE)
+wineDataDF<-cbind(tmpDF, wineDataDF)
+tmpDF<-data.frame(url=urls, stringsAsFactors=FALSE)
+wineDataDF<-cbind(tmpDF, wineDataDF)
+names(wineDataDF)<-c("url", "name", "country", "price", "color", "taste")
+</pre>
+
+<p>Next step was to translate Russian words in English, extract prices, convert them to USD and extract years, where applicable. Code for this can be obtained from slidify files, posted on github at </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Plots</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>First plot shows number of available wine kinds and colors per selected price range.
+Second plot shows countries of origin for selected price range.
+In my Shiny app, it is possible to select price range with a slider.
+Plot code can be obtained from SLidify code on GitHub.</p>
+
+<p><img src="assets/fig/unnamed-chunk-4-1.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Shiny app screenshot</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>This is what you can see at <a href="https://realsvik.shinyapps.io/app1">https://realsvik.shinyapps.io/app1</a> </p>
+
+<table border=0, width=100%, bgcolor="white>
+<tr>
+<td align="center">
+<img src="assets/img/screen.png" width=700, height=373, border=0>
+</td>
+</tr>
+</table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Sparkling wine variety overview'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Getting and cleansing data'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Plots'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Shiny app screenshot'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
